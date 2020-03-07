@@ -12,6 +12,9 @@
     <string name="loading">Loading....</string>
     <string name="none">none</string>
     <string name="nointernet">Something wents wrong! Please check your internet connecton</string>
+    <string name="refresh">Refresh</string>
+    <string name="refreshing">Refreshing...</string>
+    <string name="noproduct">No product available</string>
 
 
 </resources>

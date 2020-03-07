@@ -2,26 +2,21 @@ package com.cts.list.ui.activity;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+
 
 import com.cts.list.R;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 
 
 public class BaseActivity extends AppCompatActivity {
@@ -36,23 +31,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
-    public void setDrawble(TextView txtvw, int drawableId) {
-        Spannable span = new SpannableString("  " + txtvw.getText());  // or set your text manually
-        Drawable drawable;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            drawable = ContextCompat.getDrawable(getBaseContext(), drawableId);
-        } else {
-            drawable = AppCompatResources.getDrawable(getBaseContext(), drawableId);
-        }
-
-        if (drawable != null) {
-            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-        }
-        ImageSpan imageSpan = new ImageSpan(drawable);
-        span.setSpan(imageSpan, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        txtvw.setText(span);
-    }
 
 
     private void initProgressDialog() {

@@ -18,6 +18,11 @@ public class CustomBinders {
 
     private static final String TAG = "CustomBinders";
 
+    /**
+     * Use to set any imageview within the project
+     * @param view
+     * @param imageUrl
+     */
     @BindingAdapter({"image_url"})
     public static void loadImageWithOUtProgressBar(ImageView view, String imageUrl) {
         Log.d(TAG, "before loadImageWithOUtProgressBar: " + imageUrl);

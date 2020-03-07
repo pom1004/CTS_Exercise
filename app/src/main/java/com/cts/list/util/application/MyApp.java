@@ -6,6 +6,9 @@ import android.content.Context;
 import androidx.multidex.MultiDex;
 
 
+/**
+ * As of now no use of this app class
+ */
 public class MyApp extends Application {
 
 

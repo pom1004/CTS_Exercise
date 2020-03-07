@@ -4,7 +4,9 @@ buildscript {
 
     ext.versions = [
             'gradle'              : '3.6.1',
-            'lifecycle'           : '2.2.0'
+            'lifecycle'           : '2.2.0',
+            'retrofit2'           : '2.7.1',
+            'okhttp3'             : '4.3.1'
     ]
 
     repositories {

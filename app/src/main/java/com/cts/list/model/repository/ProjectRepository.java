@@ -1,9 +1,6 @@
 package com.cts.list.model.repository;
 
 
-import android.util.Base64;
-import android.util.Log;
-
 import com.cts.list.model.data.ProductListing;
 import com.cts.list.util.constant.Constant;
 
@@ -14,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,13 +47,10 @@ public class ProjectRepository {
     public synchronized static ProjectRepository getInstance() {
         //TODO No need to implement this singleton in Part #2 since Dagger will handle it ...
         if (projectRepository == null) {
-            if (projectRepository == null) {
-                projectRepository = new ProjectRepository();
-            }
+            projectRepository = new ProjectRepository();
         }
         return projectRepository;
     }
-
 
 
     public LiveData<List<ProductListing>> getProductList() {
@@ -78,8 +71,6 @@ public class ProjectRepository {
 
         return data;
     }
-
-
 
 
 }

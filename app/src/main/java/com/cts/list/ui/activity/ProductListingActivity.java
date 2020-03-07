@@ -3,6 +3,8 @@ package com.cts.list.ui.activity;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -13,10 +15,11 @@ import com.cts.list.ui.adapter.ProductListingAdapter;
 import com.cts.list.viewmodel.ProductListingViewModel;
 
 import java.util.List;
+import java.util.Objects;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,18 +30,8 @@ public class ProductListingActivity extends BaseActivity {
     private static final String TAG = "ListingActivity";
     ActivityListingBinding binding;
     private ProductListingViewModel viewModel;
-    private ProductListingAdapter productListingAdapter;
     private List<ProductListing> productListingList;
-   /* ActivityListingBi
-    ActivityShoppingCartBinding binding;
-    private ShoppingCartAdapter shoppingCartAdapter;
-    private ShoppingCart shoppingCart;
-    private DeleteCartProduct deleteCartProduct;
-    private int quatity = 1;
-    private String type = "";
-    private AddedToCart addedToCart;
-    private String totalamount = "";
-    private List<ShoppingCart.ListingBean> listingBeans;*/
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,22 +39,24 @@ public class ProductListingActivity extends BaseActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_listing);
         initToolBar();
 
-
         viewModel =
-                ViewModelProviders.of(this).get(ProductListingViewModel.class);
+                new ViewModelProvider(this).get(ProductListingViewModel.class);
 
-        observeViewModel();
+        observeViewModel(true);
 
 
     }
 
-    private void observeViewModel() {
-        // Update the list when the data changes
-        showProgress();
+    // Update the list when the data changes
+    private void observeViewModel(boolean showLoading) {
+        if (showLoading)
+            binding.includeMain.spinnerLoading.setVisibility(View.VISIBLE);
+        else
+            Toast.makeText(this, getResources().getString(R.string.refreshing), Toast.LENGTH_SHORT).show();
 
         viewModel.getProductListObservable()
                 .observe(this, responseBodyResponse -> {
-                    hideProgress();
+                    binding.includeMain.spinnerLoading.setVisibility(View.GONE);
                     if (responseBodyResponse != null) {
                         Log.e(TAG, "observeViewModel: ");
 
@@ -69,27 +64,9 @@ public class ProductListingActivity extends BaseActivity {
                             productListingList = responseBodyResponse;
                             setList();
                         } else {
-
+                            binding.includeMain.noProduct.setVisibility(View.VISIBLE);
+                            Toast.makeText(this, getResources().getString(R.string.noproduct), Toast.LENGTH_SHORT).show();
                         }
-
-                     /*   if (responseBodyResponse.getAck().equalsIgnoreCase("success")) {
-                            this.shoppingCart = responseBodyResponse;
-                            if (shoppingCart.getListing().size() != 0) {
-                                binding.includeMainCart.noProductTxt.setVisibility(View.GONE);
-                                binding.includeMainCart.nestedScrollView.setVisibility(View.VISIBLE);
-                                binding.includeMainCart.checkoutBtn.setVisibility(View.VISIBLE);
-                                JanaticsApplication.getInstance().saveNonLoginCartCount(String.valueOf(shoppingCart.getListing().size()));
-                                JanaticsApplication.getInstance().saveCheckoutProduct(shoppingCart.getListing());
-                                totalamount = shoppingCart.getTotal_amount();
-                                setAmountValue();
-                                listingBeans = responseBodyResponse.getListing();
-
-                            } else {
-                                noProduct();
-                            }
-                        } else {
-                            noProduct();
-                        }*/
                     } else {
                         Toast.makeText(this, getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
                     }
@@ -97,15 +74,10 @@ public class ProductListingActivity extends BaseActivity {
 
     }
 
-    /*private void noProduct() {
-        JanaticsApplication.getInstance().saveNonLoginCartCount("00");
-        binding.includeMainCart.nestedScrollView.setVisibility(View.GONE);
-        binding.includeMainCart.checkoutBtn.setVisibility(View.GONE);
-        binding.includeMainCart.noProductTxt.setVisibility(View.VISIBLE);
-        binding.includeMainCart.noProductTxt.setText("No product available!");
-    }*/
 
-
+    /**
+     * Initializing toolbar
+     */
     private void initToolBar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -116,28 +88,47 @@ public class ProductListingActivity extends BaseActivity {
     }
 
     private void setList() {
-        if (binding.includeMain.list != null) {
-            productListingAdapter = new ProductListingAdapter(productListingList, getBaseContext());
-            binding.includeMain.list.setAdapter(productListingAdapter);
-            binding.includeMain.list.setLayoutManager(new LinearLayoutManager(this));
-            binding.includeMain.list.addItemDecoration(
-                    new DividerItemDecoration(this, LinearLayoutManager.VERTICAL) {
-                        @Override
-                        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                            int position = parent.getChildAdapterPosition(view);
-                            // hide the divider for the last child
-                            if (position == parent.getAdapter().getItemCount() - 1) {
-                                outRect.setEmpty();
-                            } else {
-                                super.getItemOffsets(outRect, view, parent, state);
-                            }
+        ProductListingAdapter productListingAdapter = new ProductListingAdapter(productListingList, getBaseContext());
+        binding.includeMain.list.setAdapter(productListingAdapter);
+        binding.includeMain.list.setLayoutManager(new LinearLayoutManager(this));
+        binding.includeMain.list.addItemDecoration(
+                new DividerItemDecoration(this, LinearLayoutManager.VERTICAL) {
+                    @Override
+                    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                        int position = parent.getChildAdapterPosition(view);
+                        // hide the divider for the last child
+                        if (position == Objects.requireNonNull(parent.getAdapter()).getItemCount() - 1) {
+                            outRect.setEmpty();
+                        } else {
+                            super.getItemOffsets(outRect, view, parent, state);
                         }
                     }
-            );
+                }
+        );
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.home_menu, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        Log.e(TAG, "onOptionsItemSelected: ");
+        int id = item.getItemId();
+        if (id == R.id.refreshMenu) {
+            observeViewModel(false);
+            return true;
         }
-
+        return super.onOptionsItemSelected(item);
     }
 
 }
