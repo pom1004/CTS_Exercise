@@ -3,7 +3,8 @@
 buildscript {
 
     ext.versions = [
-            'gradle'   : '3.6.1',
+            'gradle'              : '3.6.1',
+            'lifecycle'           : '2.2.0'
     ]
 
     repositories {
